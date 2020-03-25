@@ -1,16 +1,29 @@
 import React, {Component} from 'react';
 
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Dimensions} from 'react-native';
 
-class Greeting extends Component {
-  str: string;
+//自定义自控件
+class SubComponent extends Component {
+  word: ?string = 'hello';
 
   render() {
+    console.log('Render --- SubComponent');
     return (
       <View>
-        <Text style={{color: '#ff0', fontSize: 20}}>{this.props.str}</Text>
+        <Text style={GreetingStyle.textStyle} onPress={this._changeWord}>
+          {this.props.word}
+        </Text>
       </View>
     );
+  }
+
+  _changeWord = () => {
+    console.log('word ' + this.word);
+    this.word = this.word === 'change' ? 'hello' : 'change';
+  };
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextState !== this.state;
   }
 }
 
@@ -23,22 +36,25 @@ export default class Page extends Component {
   }
 
   render() {
+    console.log('Page Render');
     return (
       <View style={PageStyle.viewStyle}>
         <Text style={PageStyle.textStyle} onPress={this._clickEvent}>
           Number is {this.state.num}
           {this.props.name}
         </Text>
-        <Greeting str="1" />
+        <SubComponent word="hello" />
       </View>
     );
   }
 
   _clickEvent = () => {
-    // this.state.num += 1;
+    const {width, height} = Dimensions.get('window');
+    console.log('width --> ' + width + ' height --> ' + height);
+    let num = this.state.num + 1;
     this.setState(
       {
-        num: (this.state.num += 1),
+        num: num,
       },
       () => {
         console.log(this.state.num);
@@ -52,12 +68,20 @@ export default class Page extends Component {
   }
 }
 
+const GreetingStyle = StyleSheet.create({
+  textStyle: {
+    color: '#6f0',
+    fontSize: 20,
+  },
+});
+
 const PageStyle = StyleSheet.create({
   viewStyle: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'black',
+    flexDirection: 'column',
   },
   textStyle: {
     color: 'white',
